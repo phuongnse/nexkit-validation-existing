@@ -1,0 +1,32 @@
+name: NexKit runner admission probe
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/nexkit-runner-probe.yml
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: [self-hosted, linux, x64, nexkit-validation-existing]
+    timeout-minutes: 3
+    # These deliberately forged values must not affect the host-installed hook.
+    env:
+      GITHUB_REPOSITORY: forged/repository
+      GITHUB_REF: refs/heads/forged
+      GITHUB_EVENT_NAME: pull_request
+      GITHUB_WORKFLOW_REF: forged/repository/.github/workflows/forged.yml@refs/heads/forged
+    steps:
+      - name: Marker proves whether workflow steps were admitted
+        if: always()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          Path('/tmp/nexkit-admission-marker').write_text('workflow step executed')
+          print('NEXKIT_WORKFLOW_STEP_EXECUTED')
+          PY
+      - name: Inspect installed tools without model or account access
+        run: |
+          codex --version
+          gh --version
+          python3 --version
