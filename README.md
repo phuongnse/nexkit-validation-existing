@@ -32,6 +32,6 @@ requests over a local TCP socket. Both suites must execute actual test cases.
 
 ## Validation scope
 
-This is a private acceptance fixture with no production data. Its baseline
+This is a public acceptance fixture with no production data. Its baseline
 behavior, commands and conventions provide inputs for NexKit setup. NexKit
 delivery, model authentication and release are validated separately.
