@@ -10,12 +10,12 @@ jobs:
   probe:
     runs-on: [self-hosted, linux, x64, nexkit-validation-existing]
     timeout-minutes: 3
-    # These deliberately forged values must not affect the host-installed hook.
+    # This branch forges an admitted context; the host hook must still reject it.
     env:
-      GITHUB_REPOSITORY: forged/repository
-      GITHUB_REF: refs/heads/forged
-      GITHUB_EVENT_NAME: pull_request
-      GITHUB_WORKFLOW_REF: forged/repository/.github/workflows/forged.yml@refs/heads/forged
+      GITHUB_REPOSITORY: phuongnse/nexkit-validation-existing
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: workflow_dispatch
+      GITHUB_WORKFLOW_REF: phuongnse/nexkit-validation-existing/.github/workflows/nexkit-runner-probe.yml@refs/heads/main
     steps:
       - name: Marker proves whether workflow steps were admitted
         if: always()
