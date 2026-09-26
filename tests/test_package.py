@@ -11,6 +11,7 @@ import zipfile
 from pathlib import Path
 from urllib.request import urlopen
 
+from http_helpers import raw_head_response
 from scripts.package import ROOT, build, git
 
 
@@ -127,7 +128,17 @@ class PackageTests(unittest.TestCase):
             with urlopen(base + "/health", timeout=5) as response:
                 self.assertEqual(response.status, 200)
                 self.assertEqual(response.headers.get_content_type(), "application/json")
-                self.assertEqual(json.load(response), {"status": "ok"})
+                get_body = response.read()
+                get_content_type = response.headers["Content-Type"]
+                get_content_length = response.headers["Content-Length"]
+                self.assertEqual(json.loads(get_body), {"status": "ok"})
+
+            status, head_headers, body = raw_head_response(base, "/health")
+            self.assertEqual(status, 200)
+            self.assertEqual(head_headers["content-type"], get_content_type)
+            self.assertEqual(head_headers["content-length"], get_content_length)
+            self.assertEqual(int(head_headers["content-length"]), len(get_body))
+            self.assertEqual(body, b"")
         finally:
             process.terminate()
             try:
