@@ -1,27 +1,133 @@
-# Managed by NexKit 0.1.0-rc.1; update through nexkit install.
-name: NexKit delivery
-on:
+name: Label service composed delivery
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  checks: write
+  actions: write
+concurrency:
+  group: nexkit-work
+  queue: max
+jobs:
+  admit:
+    uses: phuongnse/nexkit/.github/workflows/prepare-work.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      pipeline: maintenance
+  change:
+    needs: admit
+    if: needs.admit.outputs.ready == 'true'
+    uses: phuongnse/nexkit/.github/workflows/agent-invocation.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      context_artifact_id: ${{ needs.admit.outputs.context_artifact_id }}
+      invocation: change-source
+  publish:
+    needs: change
+    if: needs.change.outputs.status == 'done'
+    uses: phuongnse/nexkit/.github/workflows/publish-candidate.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      context_artifact_id: ${{ needs.change.outputs.context_artifact_id }}
+      report_artifact_id: ${{ needs.change.outputs.report_artifact_id }}
+  unit:
+    needs: publish
+    uses: phuongnse/nexkit/.github/workflows/candidate-check.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      candidate_artifact_id: ${{ needs.publish.outputs.candidate_artifact_id }}
+      check: test
+  journey:
+    needs: publish
+    uses: phuongnse/nexkit/.github/workflows/candidate-check.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      candidate_artifact_id: ${{ needs.publish.outputs.candidate_artifact_id }}
+      check: e2e
+  evaluate:
+    needs:
+    - publish
+    - unit
+    - journey
+    - package
+    uses: phuongnse/nexkit/.github/workflows/agent-invocation.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      context_artifact_id: ${{ needs.publish.outputs.candidate_artifact_id }}
+      invocation: evaluate
+      check_artifact_ids: ${{ needs.unit.outputs.report_artifact_id }},${{ needs.journey.outputs.report_artifact_id }},${{
+        needs.package.outputs.report_artifact_id }}
+  human-review:
+    needs:
+    - publish
+    - unit
+    - journey
+    - evaluate
+    - package
+    if: needs.evaluate.outputs.status == 'done'
+    uses: phuongnse/nexkit/.github/workflows/request-approval.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      context_artifact_id: ${{ needs.publish.outputs.candidate_artifact_id }}
+      gate: human-review
+      check_artifact_ids: ${{ needs.unit.outputs.report_artifact_id }},${{ needs.journey.outputs.report_artifact_id }},${{
+        needs.package.outputs.report_artifact_id }}
+      review_artifact_id: ${{ needs.evaluate.outputs.report_artifact_id }}
+  complete:
+    needs:
+    - admit
+    - change
+    - publish
+    - unit
+    - journey
+    - evaluate
+    - human-review
+    - package
+    if: always() && needs.admit.outputs.ready == 'true'
+    uses: phuongnse/nexkit/.github/workflows/finish-work.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      context_artifact_id: ${{ needs.admit.outputs.context_artifact_id }}
+      candidate_artifact_id: ${{ needs.publish.outputs.candidate_artifact_id }}
+      check_artifact_ids: ${{ needs.unit.outputs.report_artifact_id }},${{ needs.journey.outputs.report_artifact_id }},${{
+        needs.package.outputs.report_artifact_id }}
+      review_artifact_id: ${{ needs.evaluate.outputs.report_artifact_id }}
+      jobs_succeeded: ${{ needs.human-review.result == 'success' && needs.human-review.outputs.ready == 'true' && needs.change.result
+        == 'success' && needs.change.outputs.status == 'done' && needs.publish.result == 'success' && needs.unit.result ==
+        'success' && needs.journey.result == 'success' && needs.package.result == 'success' && needs.evaluate.result == 'success'
+        && needs.evaluate.outputs.status == 'done' }}
+  package:
+    needs: publish
+    uses: phuongnse/nexkit/.github/workflows/candidate-check.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      candidate_artifact_id: ${{ needs.publish.outputs.candidate_artifact_id }}
+      check: package
+'on':
   issue_comment:
-    types: [created, edited, deleted]
+    types:
+    - created
+    - edited
+    - deleted
   issues:
-    types: [edited, closed]
+    types:
+    - edited
+    - closed
   workflow_dispatch:
     inputs:
       issue:
-        description: GitHub work item number
-        required: true
         type: string
-permissions: {}
-jobs:
-  nexkit:
-    if: ${{ github.event_name == 'workflow_dispatch' || !github.event.issue.pull_request }}
-    uses: phuongnse/nexkit/.github/workflows/delivery.yml@3963c1c10b07ff4bfc8d08c735d713141710497f
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      checks: write
-      actions: write
-    with:
-      kit_repository: phuongnse/nexkit
-      kit_ref: 3963c1c10b07ff4bfc8d08c735d713141710497f
+        required: true
+      pipeline:
+        type: string
+        required: true
+        default: maintenance

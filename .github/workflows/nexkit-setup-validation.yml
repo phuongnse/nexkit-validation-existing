@@ -1,0 +1,45 @@
+name: NexKit setup validation
+on:
+  pull_request:
+    paths:
+      - '.nexkit/**'
+      - '.github/workflows/**'
+      - '.agents/skills/**'
+      - '.claude/skills/**'
+permissions:
+  contents: read
+jobs:
+  validate-setup:
+    name: NexKit setup validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          repository: phuongnse/nexkit
+          ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+          path: .nexkit-validation-tool
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+      - name: Verify accepted files and the actual application suites
+        env:
+          PYTHONPATH: ${{ github.workspace }}/.nexkit-validation-tool
+        run: |
+          python3 - <<'PYTHON'
+          import json, os
+          from pathlib import Path
+          from nexkit.project import doctor
+          root = Path(os.environ['GITHUB_WORKSPACE'])
+          report = doctor(root, json.loads((root / '.nexkit/project.json').read_text()), checks=True)
+          item = report['pipelines']['maintenance']
+          assert item['problems'] == ['GitHub permissions/settings/authentication have not been verified'], item['problems']
+          assert item['verification']['passed']
+          assert 'managed files inspected' in item['verified']
+          print(json.dumps({'scope': 'accepted files and actual application checks; online audit remains required', 'checks': [{key: check.get(key) for key in ['name', 'passed', 'tests']} for check in item['verification']['checks']]}))
+          PYTHON

@@ -3,6 +3,10 @@ name: NexKit intake
 on:
   workflow_dispatch:
     inputs:
+      pipeline:
+        type: string
+        required: true
+        default: maintenance
       operation:
         description: request or release
         required: true
@@ -16,7 +20,7 @@ permissions: {}
 jobs:
   nexkit:
     if: ${{ github.event_name == 'workflow_dispatch' || !github.event.issue.pull_request }}
-    uses: phuongnse/nexkit/.github/workflows/intake.yml@3963c1c10b07ff4bfc8d08c735d713141710497f
+    uses: phuongnse/nexkit/.github/workflows/intake.yml@ace93ccb318091e2722042b2ac6e0f19b509ae3f
     permissions:
       contents: write
       issues: write
@@ -25,4 +29,5 @@ jobs:
       actions: write
     with:
       kit_repository: phuongnse/nexkit
-      kit_ref: 3963c1c10b07ff4bfc8d08c735d713141710497f
+      kit_ref: ace93ccb318091e2722042b2ac6e0f19b509ae3f
+      pipeline: ${{ inputs.pipeline }}
