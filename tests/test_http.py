@@ -10,6 +10,8 @@ from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
+from http_helpers import raw_head_response
+
 
 class HTTPTests(unittest.TestCase):
     @classmethod
@@ -54,6 +56,21 @@ class HTTPTests(unittest.TestCase):
 
     def test_health_response(self):
         self.assertEqual(self.get("/health"), {"status": "ok"})
+
+    def test_head_health_metadata_without_wire_body(self):
+        with urlopen(self.base + "/health", timeout=5) as response:
+            get_body = response.read()
+            get_content_type = response.headers["Content-Type"]
+            get_content_length = response.headers["Content-Length"]
+        self.assertEqual(json.loads(get_body), {"status": "ok"})
+        self.assertEqual(get_content_type, "application/json; charset=utf-8")
+
+        status, head_headers, body = raw_head_response(self.base, "/health")
+        self.assertEqual(status, 200)
+        self.assertEqual(head_headers["content-type"], get_content_type)
+        self.assertEqual(head_headers["content-length"], get_content_length)
+        self.assertEqual(int(head_headers["content-length"]), len(get_body))
+        self.assertEqual(body, b"")
 
     def test_blank_text(self):
         self.assertEqual(self.get("/normalize?text="), {"value": ""})

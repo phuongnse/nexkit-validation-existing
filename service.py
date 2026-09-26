@@ -23,13 +23,21 @@ class Handler(BaseHTTPRequestHandler):
         value = parse_qs(request.query, keep_blank_values=True).get("text", [""])[0]
         self.respond(200, {"value": normalize(value)})
 
-    def respond(self, status, payload):
+    def do_HEAD(self):
+        request = urlsplit(self.path)
+        if request.path == "/health":
+            self.respond(200, {"status": "ok"}, include_body=False)
+            return
+        self.send_error(501, "Unsupported method ('HEAD')")
+
+    def respond(self, status, payload, include_body=True):
         body = json.dumps(payload).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
-        self.wfile.write(body)
+        if include_body:
+            self.wfile.write(body)
 
     def log_message(self, *_args):
         pass
