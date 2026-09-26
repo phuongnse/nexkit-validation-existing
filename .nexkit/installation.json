@@ -1,0 +1,29 @@
+{
+  "files": {
+    ".agents/skills/nexkit-deliver/SKILL.md": "ab2adf64b2988f09d1f6619bbea53cb6e33066c8a8b36d3701009668b2801c5d",
+    ".agents/skills/nexkit-howto/SKILL.md": "be2b84a51aa8f8bcaa3269b5b2589602cd0582eb718a4c72d017bdddb7258562",
+    ".agents/skills/nexkit-init/SKILL.md": "f0ace387db5ff921ecb890f85dd2bac7cbcc5026faf30de1a5480fbca248ad96",
+    ".agents/skills/nexkit-knowledge/SKILL.md": "2f3f1bfa008d9af396b3348aa134e13d8c3a4f76afd86946a00c1b3790447a26",
+    ".agents/skills/nexkit-release/SKILL.md": "9d0fe027a6f2b6b6c7711a9b065c30067b279e902a08908f94b7a75a9af621ea",
+    ".agents/skills/nexkit-request/SKILL.md": "1ef27982836071b50ad821beb68e9c38a588f1b32d026b075809826f77f8a806",
+    ".agents/skills/nexkit-review/SKILL.md": "e2e8f237b0c8426395fa02fea3173045b50655d5cbcf6cda0203fc1b148672f1",
+    ".agents/skills/nexkit-status/SKILL.md": "8ee2d13f2c73b91fe57a6f4e7408d4ba39c0f3e1978b5a986215590fcaf2cfca",
+    ".claude/skills/nexkit-deliver/SKILL.md": "ab2adf64b2988f09d1f6619bbea53cb6e33066c8a8b36d3701009668b2801c5d",
+    ".claude/skills/nexkit-howto/SKILL.md": "be2b84a51aa8f8bcaa3269b5b2589602cd0582eb718a4c72d017bdddb7258562",
+    ".claude/skills/nexkit-init/SKILL.md": "f0ace387db5ff921ecb890f85dd2bac7cbcc5026faf30de1a5480fbca248ad96",
+    ".claude/skills/nexkit-knowledge/SKILL.md": "2f3f1bfa008d9af396b3348aa134e13d8c3a4f76afd86946a00c1b3790447a26",
+    ".claude/skills/nexkit-release/SKILL.md": "9d0fe027a6f2b6b6c7711a9b065c30067b279e902a08908f94b7a75a9af621ea",
+    ".claude/skills/nexkit-request/SKILL.md": "1ef27982836071b50ad821beb68e9c38a588f1b32d026b075809826f77f8a806",
+    ".claude/skills/nexkit-review/SKILL.md": "e2e8f237b0c8426395fa02fea3173045b50655d5cbcf6cda0203fc1b148672f1",
+    ".claude/skills/nexkit-status/SKILL.md": "8ee2d13f2c73b91fe57a6f4e7408d4ba39c0f3e1978b5a986215590fcaf2cfca",
+    ".github/workflows/nexkit-clarify.yml": "f79ccc641b032b42cb14b696c8cde414ba16c309455f8bccfed6a5a48199935a",
+    ".github/workflows/nexkit-delivery.yml": "852e5fc67b853235ef5d0691dbe819af679b5be0e3478d779afc9dcf4098bd46",
+    ".github/workflows/nexkit-intake.yml": "9166253563518b3dc7c4c11c0e6422e88906ab6906d5974571b096962911c26f",
+    ".github/workflows/nexkit-release.yml": "1031ab9bfc8ae4404ba4184b99f67d66343a7b35a084d5dd729df0824a357b33"
+  },
+  "hosts": [
+    "claude",
+    "codex"
+  ],
+  "version": "0.1.0-rc.1"
+}

@@ -1,0 +1,129 @@
+{
+  "application": "present",
+  "checks": [
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_unit.py",
+        "-v"
+      ],
+      "kind": "test",
+      "name": "test",
+      "report": {
+        "format": "unittest"
+      },
+      "timeout_seconds": 120
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_http.py",
+        "-v"
+      ],
+      "kind": "e2e",
+      "name": "e2e",
+      "report": {
+        "format": "unittest"
+      },
+      "timeout_seconds": 120
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_package.py",
+        "-v"
+      ],
+      "kind": "test",
+      "name": "package",
+      "report": {
+        "format": "unittest"
+      },
+      "timeout_seconds": 120
+    }
+  ],
+  "decisions": [
+    "Use public repositories and a repository-scoped runner on the authorized VPS.",
+    "Use the official Codex CLI with a separate ChatGPT login for this consumer.",
+    "Use gpt-6-luna with max reasoning for implementation and independent review.",
+    "Keep untrusted verification and privileged controllers on GitHub-hosted runners.",
+    "The owner accepted at most two delivery rounds and six Codex invocations per work item, including clarification, with limits.minutes=60 and command_seconds=120.",
+    "Initial live acceptance is authorized for at most three work items across the two public consumers; do not increase model usage without an administrative decision.",
+    "Require strict NexKit verification and NexKit review checks from GitHub Actions on main, through a pull request, with no blanket bypass or mandatory human PR review.",
+    "Preserve the Python 3.12+ standard-library label HTTP service, its documented behavior, unittest commands and real subprocess TCP E2E.",
+    "Use the deterministic local ZIP builder for the authorized v0.1.0-test.1 release scope; an exact human candidate approval is still required."
+  ],
+  "default_branch": "main",
+  "engine": {
+    "auth": "chatgpt",
+    "name": "codex",
+    "version": "0.156.1"
+  },
+  "environment": {
+    "agent_runner": [
+      "self-hosted",
+      "linux",
+      "x64",
+      "nexkit-validation-existing"
+    ],
+    "runner": "ubuntu-24.04",
+    "setup": []
+  },
+  "kit": {
+    "ref": "3963c1c10b07ff4bfc8d08c735d713141710497f",
+    "repository": "phuongnse/nexkit",
+    "version": "0.1.0-rc.1"
+  },
+  "knowledge": [
+    "README.md"
+  ],
+  "limits": {
+    "agent_calls": 6,
+    "attempts": 2,
+    "command_seconds": 120,
+    "minutes": 60
+  },
+  "merge_method": "squash",
+  "models": {
+    "implement": "gpt-6-luna",
+    "review": "gpt-6-luna"
+  },
+  "reasoning_effort": {
+    "implement": "max",
+    "review": "max"
+  },
+  "release": {
+    "artifacts": [
+      "dist/label-service-{version}.zip"
+    ],
+    "build": [
+      "python3",
+      "scripts/package.py",
+      "--version",
+      "{version}",
+      "--commit",
+      "{commit}"
+    ],
+    "enabled": true,
+    "tag_prefix": "v"
+  },
+  "repository": "phuongnse/nexkit-validation-existing",
+  "schema": 1
+}

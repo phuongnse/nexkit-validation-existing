@@ -1,0 +1,27 @@
+# Managed by NexKit 0.1.0-rc.1; update through nexkit install.
+name: NexKit delivery
+on:
+  issue_comment:
+    types: [created, edited, deleted]
+  issues:
+    types: [edited, closed]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: GitHub work item number
+        required: true
+        type: string
+permissions: {}
+jobs:
+  nexkit:
+    if: ${{ github.event_name == 'workflow_dispatch' || !github.event.issue.pull_request }}
+    uses: phuongnse/nexkit/.github/workflows/delivery.yml@3963c1c10b07ff4bfc8d08c735d713141710497f
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      checks: write
+      actions: write
+    with:
+      kit_repository: phuongnse/nexkit
+      kit_ref: 3963c1c10b07ff4bfc8d08c735d713141710497f
