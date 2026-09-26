@@ -1,129 +1,218 @@
 {
-  "application": "present",
-  "checks": [
-    {
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "discover",
-        "-s",
-        "tests",
-        "-p",
-        "test_unit.py",
-        "-v"
-      ],
-      "kind": "test",
-      "name": "test",
-      "report": {
-        "format": "unittest"
-      },
-      "timeout_seconds": 120
-    },
-    {
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "discover",
-        "-s",
-        "tests",
-        "-p",
-        "test_http.py",
-        "-v"
-      ],
-      "kind": "e2e",
-      "name": "e2e",
-      "report": {
-        "format": "unittest"
-      },
-      "timeout_seconds": 120
-    },
-    {
-      "argv": [
-        "python3",
-        "-m",
-        "unittest",
-        "discover",
-        "-s",
-        "tests",
-        "-p",
-        "test_package.py",
-        "-v"
-      ],
-      "kind": "test",
-      "name": "package",
-      "report": {
-        "format": "unittest"
-      },
-      "timeout_seconds": 120
-    }
-  ],
-  "decisions": [
-    "Use public repositories and a repository-scoped runner on the authorized VPS.",
-    "Use the official Codex CLI with a separate ChatGPT login for this consumer.",
-    "Use gpt-6-luna with max reasoning for implementation and independent review.",
-    "Keep untrusted verification and privileged controllers on GitHub-hosted runners.",
-    "The owner accepted at most two delivery rounds and six Codex invocations per work item, including clarification, with limits.minutes=60 and command_seconds=120.",
-    "Initial live acceptance is authorized for at most three work items across the two public consumers; do not increase model usage without an administrative decision.",
-    "Require strict NexKit verification and NexKit review checks from GitHub Actions on main, through a pull request, with no blanket bypass or mandatory human PR review.",
-    "Preserve the Python 3.12+ standard-library label HTTP service, its documented behavior, unittest commands and real subprocess TCP E2E.",
-    "Use the deterministic local ZIP builder for the authorized v0.1.0-test.1 release scope; an exact human candidate approval is still required."
-  ],
   "default_branch": "main",
-  "engine": {
-    "auth": "chatgpt",
-    "name": "codex",
-    "version": "0.156.1"
-  },
-  "environment": {
-    "agent_runner": [
-      "self-hosted",
-      "linux",
-      "x64",
-      "nexkit-validation-existing"
+  "defaults": {
+    "application": "present",
+    "checks": [
+      {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-p",
+          "test_unit.py",
+          "-v"
+        ],
+        "kind": "test",
+        "name": "test",
+        "report": {
+          "format": "unittest"
+        },
+        "timeout_seconds": 120
+      },
+      {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-p",
+          "test_http.py",
+          "-v"
+        ],
+        "kind": "e2e",
+        "name": "e2e",
+        "report": {
+          "format": "unittest"
+        },
+        "timeout_seconds": 120
+      },
+      {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-p",
+          "test_package.py",
+          "-v"
+        ],
+        "kind": "test",
+        "name": "package",
+        "report": {
+          "format": "unittest"
+        },
+        "timeout_seconds": 120
+      }
     ],
-    "runner": "ubuntu-24.04",
-    "setup": []
+    "decisions": [
+      "Use public repositories and a repository-scoped runner on the authorized VPS.",
+      "Use the official Codex CLI with a separate ChatGPT login for this consumer.",
+      "Use gpt-6-luna with max reasoning for implementation and independent review.",
+      "Keep untrusted verification and privileged controllers on GitHub-hosted runners.",
+      "The owner accepted at most two delivery rounds and six Codex invocations per work item, including clarification, with limits.minutes=60 and command_seconds=120.",
+      "Initial live acceptance is authorized for at most three work items across the two public consumers; do not increase model usage without an administrative decision.",
+      "Preserve the Python 3.12+ standard-library label HTTP service, its documented behavior, unittest commands and real subprocess TCP E2E.",
+      "Use the deterministic local ZIP builder for the authorized v0.1.0-test.1 release scope; an exact human candidate approval is still required.",
+      "Proposed setup: consumer-owned composed delivery requires current NexKit checks and one native PR approval from phuongnse, with stale-review dismissal and no bypass actors.",
+      "Proposed setup: human-review waits at most 2880 minutes without retaining a runner; request-changes uses only remaining delivery rounds and calls."
+    ],
+    "engine": {
+      "auth": "chatgpt",
+      "name": "codex",
+      "version": "0.156.1"
+    },
+    "environment": {
+      "agent_runner": [
+        "self-hosted",
+        "linux",
+        "x64",
+        "nexkit-validation-existing"
+      ],
+      "runner": "ubuntu-24.04",
+      "setup": []
+    },
+    "knowledge": [
+      "README.md"
+    ],
+    "limits": {
+      "agent_calls": 6,
+      "attempts": 2,
+      "command_seconds": 120,
+      "minutes": 60
+    },
+    "merge_method": "squash",
+    "models": {
+      "implement": "gpt-6-luna",
+      "review": "gpt-6-luna"
+    },
+    "reasoning_effort": {
+      "implement": "max",
+      "review": "max"
+    },
+    "release": {
+      "artifacts": [
+        "dist/label-service-{version}.zip"
+      ],
+      "build": [
+        "python3",
+        "scripts/package.py",
+        "--version",
+        "{version}",
+        "--commit",
+        "{commit}"
+      ],
+      "enabled": true,
+      "tag_prefix": "v"
+    }
+  },
+  "files": {
+    ".github/workflows/nexkit-clarify.yml": {
+      "managed": true,
+      "sha256": "9d772c752c4396d17d99e582d9d1acb138753648198b2d5b1eaed922363097b0"
+    },
+    ".github/workflows/nexkit-continue.yml": {
+      "managed": true,
+      "sha256": "4c4f1e02ba9d2c78f023bf5911917a3874dfc8c31fe7a4a4c48515dd616678b8"
+    },
+    ".github/workflows/nexkit-delivery.yml": {
+      "managed": true,
+      "sha256": "c04b0b3e215b55aa38061782fd05fedcf6dc23b2c2ddc689f47f798990e2825e"
+    },
+    ".github/workflows/nexkit-intake.yml": {
+      "managed": true,
+      "sha256": "228b8d2f16366b3f946be30fc65970d3de992f7a2a6cf601311d9b7fc50bc081"
+    },
+    ".github/workflows/nexkit-release.yml": {
+      "managed": true,
+      "sha256": "cb9e6234fcd5f64265821c383b9e85265f00532b7f5c264ce6bab2b54da26585"
+    },
+    ".github/workflows/nexkit-review-events.yml": {
+      "managed": true,
+      "sha256": "5e5ce4f71069002fc00716ee31e2fdc1faa591b2d904dbc6ff9ea49ec3260802"
+    },
+    ".github/workflows/nexkit-setup-validation.yml": {
+      "managed": true,
+      "sha256": "d1faa79ff7c89088f4f3594af0d20c36b72a979df0278c5d61c7a0f48281f16d"
+    },
+    ".nexkit/controls/implement.md": {
+      "managed": true,
+      "sha256": "329aa341cdc5a06a01c8ede9afbd505ed7bf16a798452a6344ebf541545887c9"
+    },
+    ".nexkit/controls/review.md": {
+      "managed": true,
+      "sha256": "4a6bd90741df32e8d67d370727672d18c4c7b9d9fa1ace3f540a2495bf54c9a3"
+    }
   },
   "kit": {
-    "ref": "3963c1c10b07ff4bfc8d08c735d713141710497f",
+    "ref": "ace93ccb318091e2722042b2ac6e0f19b509ae3f",
     "repository": "phuongnse/nexkit",
     "version": "0.1.0-rc.1"
   },
-  "knowledge": [
-    "README.md"
-  ],
-  "limits": {
-    "agent_calls": 6,
-    "attempts": 2,
-    "command_seconds": 120,
-    "minutes": 60
-  },
-  "merge_method": "squash",
-  "models": {
-    "implement": "gpt-6-luna",
-    "review": "gpt-6-luna"
-  },
-  "reasoning_effort": {
-    "implement": "max",
-    "review": "max"
-  },
-  "release": {
-    "artifacts": [
-      "dist/label-service-{version}.zip"
-    ],
-    "build": [
-      "python3",
-      "scripts/package.py",
-      "--version",
-      "{version}",
-      "--commit",
-      "{commit}"
-    ],
-    "enabled": true,
-    "tag_prefix": "v"
+  "pipelines": {
+    "maintenance": {
+      "agent_workflows": [
+        ".github/workflows/nexkit-clarify.yml",
+        ".github/workflows/nexkit-delivery.yml"
+      ],
+      "approvals": {
+        "human-review": {
+          "continuation": ".github/workflows/nexkit-continue.yml",
+          "enabled": true,
+          "minimum": 1,
+          "mode": "pull_request",
+          "on_rejection": "retry",
+          "protects": [
+            "merge"
+          ],
+          "reviewers": [
+            "phuongnse"
+          ],
+          "subject": "candidate",
+          "wait_minutes": 2880
+        }
+      },
+      "entrypoints": {
+        "clarify": ".github/workflows/nexkit-clarify.yml",
+        "delivery": ".github/workflows/nexkit-delivery.yml",
+        "intake": ".github/workflows/nexkit-intake.yml",
+        "release": ".github/workflows/nexkit-release.yml"
+      },
+      "invocations": {
+        "change-source": {
+          "contract": "deliver",
+          "minutes": 30,
+          "model": "gpt-6-luna",
+          "reasoning_effort": "max",
+          "task": ".nexkit/controls/implement.md"
+        },
+        "evaluate": {
+          "contract": "review",
+          "minutes": 30,
+          "model": "gpt-6-luna",
+          "reasoning_effort": "max",
+          "task": ".nexkit/controls/review.md"
+        }
+      },
+      "settings": {}
+    }
   },
   "repository": "phuongnse/nexkit-validation-existing",
-  "schema": 1
+  "schema": 2
 }
