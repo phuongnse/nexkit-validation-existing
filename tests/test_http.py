@@ -52,6 +52,9 @@ class HTTPTests(unittest.TestCase):
         query = urlencode({"text": "  Hello   WORLD  "})
         self.assertEqual(self.get("/normalize?" + query), {"value": "hello-world"})
 
+    def test_health_response(self):
+        self.assertEqual(self.get("/health"), {"status": "ok"})
+
     def test_blank_text(self):
         self.assertEqual(self.get("/normalize?text="), {"value": ""})
 

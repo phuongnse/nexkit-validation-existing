@@ -14,6 +14,9 @@ def normalize(value: str) -> str:
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         request = urlsplit(self.path)
+        if request.path == "/health":
+            self.respond(200, {"status": "ok"})
+            return
         if request.path != "/normalize":
             self.respond(404, {"error": "not_found"})
             return
