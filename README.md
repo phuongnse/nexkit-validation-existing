@@ -17,8 +17,9 @@ curl 'http://127.0.0.1:8000/normalize?text=Hello%20World'
 `GET /normalize?text=...` returns a JSON object such as
 `{"value": "hello-world"}`. Normalization lowercases text, removes surrounding
 whitespace and joins whitespace-separated words with hyphens. Punctuation is
-preserved. Missing or blank text produces an empty value. Unknown routes return
-HTTP 404 with `{"error": "not_found"}`. The service listens on loopback only.
+preserved. Missing or blank text produces an empty value. `GET /health` returns
+HTTP 200 with `{"status": "ok"}` as JSON. Unknown routes return HTTP 404 with
+`{"error": "not_found"}`. The service listens on loopback only.
 
 ## Verify
 

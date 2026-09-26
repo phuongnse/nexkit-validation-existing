@@ -124,6 +124,10 @@ class PackageTests(unittest.TestCase):
             with urlopen(base + "/normalize?text=Hello%20WORLD", timeout=5) as response:
                 self.assertEqual(response.status, 200)
                 self.assertEqual(json.load(response), {"value": "hello-world"})
+            with urlopen(base + "/health", timeout=5) as response:
+                self.assertEqual(response.status, 200)
+                self.assertEqual(response.headers.get_content_type(), "application/json")
+                self.assertEqual(json.load(response), {"status": "ok"})
         finally:
             process.terminate()
             try:
